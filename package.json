@@ -4,6 +4,8 @@
   "description": "A blockchain explorer application",
   "private": true,
   "scripts": {
+    "hh": "pnpm --filter @bitsplorer/hardhat",
+    "njs": "pnpm --filter @bitsplorer/nextjs",
     "dev": "pnpm --filter @bitsplorer/nextjs dev",
     "dev:nextjs": "pnpm --filter @bitsplorer/nextjs dev",
     "build": "pnpm --filter @bitsplorer/nextjs build",

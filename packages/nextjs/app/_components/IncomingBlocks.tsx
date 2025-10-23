@@ -18,10 +18,10 @@ const IncomingBlocks: React.FC<{ blocks: BlockType[]; loading: boolean }> = ({
   }, [blocks]);
 
   return (
-    <div className="flex flex-col items-start justify-start flex-1 max-h-[740px] pt-8 relative">
-      <h1 className="text-lg font-medium font-slate-900 my-0">
+    <div className="flex flex-col items-start justify-start flex-1 h-full pt-8 relative">
+      <h4 className="text-headline-4 font-medium font-slate-900 my-0">
         Incoming Blocks
-      </h1>
+      </h4>
       <p className="text-normal font-regular text-slate-500 my-0">
         Here are the latest blocks that have been mined.
       </p>

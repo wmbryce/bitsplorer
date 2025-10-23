@@ -27,7 +27,7 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
         default: { ease: "easeInOut", delay: index === 0 ? 0.28 : 0 },
         layout: { duration: 0.3 }, // Controls the sliding animation
       }}
-      className="flex flex-row bg-slate-50 p-4 w-full border border-slate-200 rounded-md"
+      className="flex flex-row flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md"
     >
       <div className="flex flex-col justify-between bg-slate-300 py-2 px-4 rounded-md min-w-[100px]">
         <h2 className="text-2xl font-bold text-slate-900 mb-0">
