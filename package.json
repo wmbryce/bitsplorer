@@ -1,13 +1,27 @@
 {
   "name": "bitsplorer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A blockchain explorer application",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "pnpm --filter @bitsplorer/nextjs dev",
+    "dev:nextjs": "pnpm --filter @bitsplorer/nextjs dev",
+    "build": "pnpm --filter @bitsplorer/nextjs build",
+    "build:nextjs": "pnpm --filter @bitsplorer/nextjs build",
+    "start": "pnpm --filter @bitsplorer/nextjs start",
+    "lint": "pnpm --filter @bitsplorer/nextjs lint",
+    "hardhat:compile": "pnpm --filter @bitsplorer/hardhat hardhat compile",
+    "hardhat:test": "pnpm --filter @bitsplorer/hardhat hardhat test",
+    "hardhat:node": "pnpm --filter @bitsplorer/hardhat hardhat node",
+    "clean": "pnpm -r exec rm -rf node_modules && rm -rf node_modules",
+    "install:all": "pnpm install"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "blockchain",
+    "explorer",
+    "web3"
+  ],
+  "author": "michael@wmby.me",
   "license": "ISC",
   "packageManager": "pnpm@10.5.2"
 }
