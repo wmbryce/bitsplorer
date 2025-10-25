@@ -10,6 +10,11 @@ export default function Page() {
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [latestBlockInfo, setLatestBlockInfo] = useState<{
+    number: bigint;
+    txCount: number;
+    timestamp: Date;
+  } | null>(null);
   const networkInfo = {
     name: sepolia.name,
     chainId: sepolia.id,
@@ -33,7 +38,7 @@ export default function Page() {
           const blockNumber = latestBlockNumber - BigInt(i);
           const block = await client.getBlock({
             blockNumber,
-            includeTransactions: false,
+            includeTransactions: true, // Include transaction hashes to get count
           });
           initialBlocks.push(block as BlockType);
         }
@@ -53,13 +58,40 @@ export default function Page() {
 
     // Watch for new blocks
     const unwatch = client.watchBlocks({
-      onBlock: (block) => {
-        console.log("New block received:", block.number);
-        setBlocks((prevBlocks) => {
-          // Add new block to the beginning and keep only the latest 20
-          const newBlocks = [block as BlockType, ...prevBlocks].slice(0, 20);
-          return newBlocks;
-        });
+      onBlock: async (block) => {
+        console.log("New block detected:", block.number);
+        // Fetch full block details with transactions
+        try {
+          const fullBlock = await client.getBlock({
+            blockNumber: block.number,
+            includeTransactions: true,
+          });
+          console.log(
+            `Block #${fullBlock.number} - ${fullBlock.transactions.length} transactions`,
+            fullBlock
+          );
+          // Update latest block info for real-time display
+          setLatestBlockInfo({
+            number: fullBlock.number,
+            txCount: fullBlock.transactions.length,
+            timestamp: new Date(),
+          });
+          setBlocks((prevBlocks) => {
+            // Add new block to the beginning and keep only the latest 20
+            const newBlocks = [fullBlock as BlockType, ...prevBlocks].slice(
+              0,
+              20
+            );
+            return newBlocks;
+          });
+        } catch (err) {
+          console.error("Error fetching full block details:", err);
+          // Fallback to basic block if fetch fails
+          setBlocks((prevBlocks) => {
+            const newBlocks = [block as BlockType, ...prevBlocks].slice(0, 20);
+            return newBlocks;
+          });
+        }
       },
       onError: (err) => {
         console.error("Error watching blocks:", err);
@@ -86,11 +118,19 @@ export default function Page() {
           Welcome to Bitsplorer. Explore the blockchain and see the latest
           blocks as they are minted.
         </p>
-        {networkInfo && (
-          <p className="text-sm font-medium text-slate-500 mt-2">
-            Connected to {networkInfo.name} (Chain ID: {networkInfo.chainId})
-          </p>
-        )}
+        <div className="flex items-center gap-4 mt-2">
+          {networkInfo && (
+            <p className="text-sm font-medium text-slate-500">
+              Connected to {networkInfo.name} (Chain ID: {networkInfo.chainId})
+            </p>
+          )}
+          {latestBlockInfo && (
+            <p className="text-sm font-semibold text-green-600 animate-pulse">
+              ⚡ Latest: Block #{String(latestBlockInfo.number)} (
+              {latestBlockInfo.txCount} txs)
+            </p>
+          )}
+        </div>
         {error && (
           <p className="text-sm font-medium text-red-500 mt-2">{error}</p>
         )}

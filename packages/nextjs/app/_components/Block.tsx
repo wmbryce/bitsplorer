@@ -47,13 +47,16 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
           <Skeleton className="w-[100px] h-[30%]" />
         )}
       </div>
-      <div className="flex flex-col ml-4 w-[506px]">
+      <div className="flex flex-col ml-4 flex-1">
         <div className="flex flex-row items-center pl-2 bg-slate-300 rounded-md mb-2 w-[104%] z-10">
           <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-[108%] h-[16px]">
             {isBlockType(block) && block?.hash?.slice(0, -1)}
           </p>
         </div>
-        <BlobVisualizer minted={index !== 0} />
+        <BlobVisualizer
+          minted={index !== 0}
+          transactionCount={isBlockType(block) ? block.transactions.length : 0}
+        />
       </div>
       <div className="flex flex-col bg-slate-300 rounded-md p-4 ml-2 w-[74px]">
         {isBlockType(block) ? (
@@ -61,7 +64,7 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
             {block?.hash?.slice(-1)}
           </h1>
         ) : (
-          <Skeleton className="w-[100%] h-[100%]" />
+          <Skeleton className="w-full h-full" />
         )}
       </div>
     </motion.li>
