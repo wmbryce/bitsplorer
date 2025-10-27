@@ -27,14 +27,15 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
         default: { ease: "easeInOut", delay: index === 0 ? 0.28 : 0 },
         layout: { duration: 0.3 }, // Controls the sliding animation
       }}
-      className="flex flex-row flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md"
+      className="flex flex-col md:flex-row gap-3 flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md"
     >
-      <div className="flex flex-col justify-between bg-slate-300 py-2 px-4 rounded-md min-w-[100px]">
-        <h2 className="text-2xl font-bold text-slate-900 mb-0">
-          #{String(block?.number)}
+      <div className="flex flex-col justify-start items-end bg-slate-200 py-2 px-4 rounded-md min-w-[80px]">
+        <h2 className="text-2xl font-bold text-slate-900 mb-0 tracking-tighter">
+          <span className="text-base font-bold text-slate-500 mr-1">#</span>
+          {String(block?.number)}
         </h2>
         {isBlockType(block) ? (
-          <p className="text-md font-normal text-slate-700 whitespace-nowrap my-0">
+          <p className="text-md font-semibold text-slate-600 whitespace-nowrap my-0">
             {new Date(Number(block?.timestamp) * 1000).toLocaleString("en-GB", {
               timeZone: "GMT",
               hour: "2-digit",
@@ -44,28 +45,19 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
             GMT
           </p>
         ) : (
-          <Skeleton className="w-[100px] h-[30%]" />
+          <Skeleton className="w-full h-5" />
         )}
       </div>
-      <div className="flex flex-col ml-4 flex-1">
-        <div className="flex flex-row items-center pl-2 bg-slate-300 rounded-md mb-2 w-[104%] z-10">
-          <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-[108%] h-[16px]">
-            {isBlockType(block) && block?.hash?.slice(0, -1)}
+      <div className="flex flex-col flex-1">
+        <div className="flex flex-row items-center pl-2 bg-slate-200 rounded-md mb-2 z-10">
+          <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-fit h-[16px] overflow-hidden text-ellipsis whitespace-nowrap">
+            {isBlockType(block) && block?.hash}
           </p>
         </div>
         <BlobVisualizer
           minted={index !== 0}
           transactionCount={isBlockType(block) ? block.transactions.length : 0}
         />
-      </div>
-      <div className="flex flex-col bg-slate-300 rounded-md p-4 ml-2 w-[74px]">
-        {isBlockType(block) ? (
-          <h1 className="text-6xl font-semibold text-slate-600 my-0 uppercase">
-            {block?.hash?.slice(-1)}
-          </h1>
-        ) : (
-          <Skeleton className="w-full h-full" />
-        )}
       </div>
     </motion.li>
   );
