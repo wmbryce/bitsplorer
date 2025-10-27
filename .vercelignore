@@ -1,0 +1,7 @@
+packages/hardhat
+node_modules
+.git
+.gitignore
+*.log
+.DS_Store
+

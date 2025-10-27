@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { createPublicClient, http } from "viem";
 import IncomingBlocks from "./_components/IncomingBlocks";
 import { BlockType } from "@/types";
 import { getChainConfig, getChainIds, SUPPORTED_CHAINS } from "@/utils/chains";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function Page() {
+function BitsplorerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const chainParam = searchParams.get("chain");
@@ -196,5 +196,19 @@ export default function Page() {
         <IncomingBlocks blocks={blocks} loading={loading} />
       </main>
     </section>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-lg text-slate-600">Loading...</div>
+        </div>
+      }
+    >
+      <BitsplorerContent />
+    </Suspense>
   );
 }
