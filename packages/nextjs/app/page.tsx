@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { createPublicClient, http } from "viem";
+import { Suspense } from "react";
 import IncomingBlocks from "./_components/IncomingBlocks";
-import { BlockType } from "@/types";
 import { getChainConfig, getChainIds, SUPPORTED_CHAINS } from "@/utils/chains";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useBlockStream } from "@/hooks/useBlockStream";
 
 function BitsplorerContent() {
   const router = useRouter();
@@ -13,14 +12,10 @@ function BitsplorerContent() {
   const chainParam = searchParams.get("chain");
   const chainConfig = getChainConfig(chainParam);
 
-  const [blocks, setBlocks] = useState<BlockType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [latestBlockInfo, setLatestBlockInfo] = useState<{
-    number: bigint;
-    txCount: number;
-    timestamp: Date;
-  } | null>(null);
+  // Use custom hook to manage blockchain streaming
+  const { blocks, loading, error, latestBlockInfo } = useBlockStream(
+    chainConfig.id
+  );
 
   const networkInfo = {
     name: chainConfig.chain.name,
@@ -30,117 +25,6 @@ function BitsplorerContent() {
   const handleChainChange = (newChainId: string) => {
     router.push(`?chain=${newChainId}`);
   };
-
-  useEffect(() => {
-    // Create a public client connected to the selected chain
-    const client = createPublicClient({
-      chain: chainConfig.chain,
-      transport: http(),
-    });
-
-    // Reset state when chain changes (initial setup)
-    let mounted = true;
-    // eslint-disable-next-line
-    setBlocks([]);
-    setLoading(true);
-    setError(null);
-    setLatestBlockInfo(null);
-
-    // Fetch initial blocks
-    const fetchInitialBlocks = async () => {
-      try {
-        const latestBlockNumber = await client.getBlockNumber();
-        const initialBlocks: BlockType[] = [];
-
-        // Fetch the last 5 blocks
-        for (let i = 0; i < 5; i++) {
-          const blockNumber = latestBlockNumber - BigInt(i);
-          const block = await client.getBlock({
-            blockNumber,
-            includeTransactions: true, // Include transaction hashes to get count
-          });
-          initialBlocks.push(block as BlockType);
-        }
-
-        if (mounted) {
-          setBlocks(initialBlocks);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("Error fetching initial blocks:", err);
-        if (mounted) {
-          setError(
-            "Failed to fetch blocks. Please check your network connection."
-          );
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchInitialBlocks();
-
-    // Watch for new blocks
-    const unwatch = client.watchBlocks({
-      onBlock: async (block) => {
-        if (!mounted) return;
-        console.log("New block detected:", block.number);
-        // Fetch full block details with transactions
-        try {
-          const fullBlock = await client.getBlock({
-            blockNumber: block.number,
-            includeTransactions: true,
-          });
-          console.log(
-            `Block #${fullBlock.number} - ${fullBlock.transactions.length} transactions`,
-            fullBlock
-          );
-          // Update latest block info for real-time display
-          if (mounted) {
-            setLatestBlockInfo({
-              number: fullBlock.number,
-              txCount: fullBlock.transactions.length,
-              timestamp: new Date(),
-            });
-            setBlocks((prevBlocks) => {
-              // Add new block to the beginning and keep only the latest 20
-              const newBlocks = [fullBlock as BlockType, ...prevBlocks].slice(
-                0,
-                20
-              );
-              return newBlocks;
-            });
-          }
-        } catch (err) {
-          console.error("Error fetching full block details:", err);
-          // Fallback to basic block if fetch fails
-          if (mounted) {
-            setBlocks((prevBlocks) => {
-              const newBlocks = [block as BlockType, ...prevBlocks].slice(
-                0,
-                20
-              );
-              return newBlocks;
-            });
-          }
-        }
-      },
-      onError: (err) => {
-        console.error("Error watching blocks:", err);
-        if (mounted) {
-          setError("Error receiving new blocks");
-        }
-      },
-      emitOnBegin: false,
-      poll: true,
-      pollingInterval: chainConfig.pollingInterval,
-    });
-
-    // Cleanup function
-    return () => {
-      mounted = false;
-      unwatch();
-    };
-  }, [chainConfig]);
 
   return (
     <section className="flex flex-col items-start h-full justify-start flex-1 py-8">

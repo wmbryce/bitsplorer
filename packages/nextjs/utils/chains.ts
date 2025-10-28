@@ -50,7 +50,7 @@ export const SUPPORTED_CHAINS: Record<string, ChainConfig> = {
     id: "arbitrum",
     name: "Arbitrum One",
     chain: arbitrum,
-    pollingInterval: 250, // ~250ms block time
+    pollingInterval: 100, // ~250ms block time
   },
 };
 
