@@ -65,13 +65,14 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
     <motion.li
       layoutId={`block-${block.number}`}
       key={`block-${block.number}`}
-      initial={index === 0 ? { opacity: 0 } : false}
+      initial={index === 0 ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.3,
-        default: { ease: "easeInOut", delay: index === 0 ? 0.28 : 0 },
+        default: { ease: "easeInOut", delay: index === 0 ? 0.28 * index : 0 },
         layout: { duration: 0.3 }, // Controls the sliding animation
       }}
+      layout="position"
       className={`flex flex-col md:flex-row gap-3 flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md ${
         isFullBlock
           ? "cursor-pointer hover:border-slate-400 hover:shadow-md transition-all"

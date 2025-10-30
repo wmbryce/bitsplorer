@@ -23,7 +23,9 @@ const IncomingBlocks: React.FC<{ blocks: BlockType[]; loading: boolean }> = ({
         layout
         className="flex flex-col space-y-4 mt-6 w-full overflow-y-auto"
       >
-        <Block block={{ number: nextBlock }} index={0} key={nextBlock} />
+        {nextBlock !== BigInt(0) ? (
+          <Block block={{ number: nextBlock }} index={0} key={nextBlock} />
+        ) : null}
         {blocks.slice(0, 6).map((block: BlockType, index: number) => (
           <Block key={block.number} block={block} index={index + 1} />
         ))}
