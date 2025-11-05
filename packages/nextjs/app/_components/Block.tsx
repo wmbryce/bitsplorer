@@ -61,16 +61,17 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
     </>
   );
 
+  console.log(block.number, index);
   return (
     <motion.li
       layoutId={`block-${block.number}`}
       key={`block-${block.number}`}
-      initial={{ opacity: index === 0 ? 1 : 0, y: -20 }}
+      initial={{ opacity: index === 0 ? 0 : 1, y: -180 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.8,
-        delay: index * 0.08,
-        ease: "easeOut",
+        duration: 0.6,
+        delay: index * 0.04,
+        ease: "easeInOut",
       }}
       layout="position"
       className={`flex flex-col md:flex-row gap-3 flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md ${
