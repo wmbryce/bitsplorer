@@ -5,8 +5,41 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BlockType } from "@/types/index";
 import { createPublicClient, http } from "viem";
 import { getChainConfig } from "@/utils/chains";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { BlockHeader } from "@/app/_components/BlockHeader";
+import { QuickStats } from "@/app/_components/QuickStats";
+import { ValueFlowTimeline } from "@/app/_components/FlowValueTimeline";
+import { GasEfficiencyGauge } from "@/app/_components/GasEfficiencyGauge";
+import { TransactionMatrix } from "@/app/_components/TransactionMatrix";
+import { RecentTransactions } from "@/app/_components/RecentTransactions";
+import type { BlockData, Transaction } from "@/types";
 
-function BlockDetailContent({
+const blockData: BlockData = {
+  number: 23737722,
+  timestamp: "04:01:11 GMT",
+  hash: "0XF6635EA47F37BF992F69A0AB1C51ED03D4D6BA234FBC391CD978F6A61928662F",
+  parentHash:
+    "0X0DB9C06EFEDF995BECB817E191BEB677C15BB12DAFC7C23DFDEA677238E307E0",
+  miner: "0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326",
+  gasUsed: 29847563,
+  gasLimit: 30000000,
+  baseFee: 12.5,
+  transactions: 195,
+  totalValue: 1247.83,
+  avgGasPrice: 15.2,
+  blockReward: 2.05,
+  size: 89234,
+};
+
+const transactions: Transaction[] = Array.from({ length: 195 }, (_, i) => ({
+  hash: `0x${Math.random().toString(16).slice(2, 66)}`,
+  value: Math.random() * 10,
+  gasUsed: Math.floor(Math.random() * 200000) + 21000,
+  status: Math.random() > 0.05 ? "success" : "failed",
+}));
+
+export default function BlockDetailPage({
   params,
 }: {
   params: Promise<{ blockNumber: string }>;
@@ -49,246 +82,6 @@ function BlockDetailContent({
     fetchBlockDetails();
   }, [blockNumber, chainConfig.chain]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-slate-600">Loading block details...</div>
-      </div>
-    );
-  }
-
-  if (error || !block) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <div className="text-lg text-red-600">{error || "Block not found"}</div>
-        <button
-          onClick={() => router.push(`/?chain=${chainConfig.id}`)}
-          className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800"
-        >
-          Back to Blocks
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <button
-          onClick={() => router.push(`/?chain=${chainConfig.id}`)}
-          className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 mb-4"
-        >
-          ← Back to Blocks
-        </button>
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">
-          Block #{String(block.number)}
-        </h1>
-        <p className="text-slate-600">
-          {chainConfig.chain.name} (Chain ID: {chainConfig.chain.id})
-        </p>
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-        {/* Block Overview */}
-        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Block Overview
-          </h2>
-        </div>
-
-        <div className="divide-y divide-slate-200">
-          {/* Block Hash */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Block Hash</div>
-            <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-              {block.hash}
-            </div>
-          </div>
-
-          {/* Timestamp */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Timestamp</div>
-            <div className="md:col-span-2 text-slate-600">
-              {block.timestamp
-                ? new Date(Number(block.timestamp) * 1000).toLocaleString()
-                : "N/A"}
-            </div>
-          </div>
-
-          {/* Parent Hash */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Parent Hash</div>
-            <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-              {block.parentHash}
-            </div>
-          </div>
-
-          {/* Miner */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Miner</div>
-            <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-              {block.miner}
-            </div>
-          </div>
-
-          {/* Transactions */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Transactions</div>
-            <div className="md:col-span-2 text-slate-600">
-              {block.transactions.length} transactions
-            </div>
-          </div>
-
-          {/* Gas Used */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Gas Used</div>
-            <div className="md:col-span-2 text-slate-600">
-              {String(block.gasUsed)} / {String(block.gasLimit)} (
-              {((Number(block.gasUsed) / Number(block.gasLimit)) * 100).toFixed(
-                2
-              )}
-              %)
-            </div>
-          </div>
-
-          {/* Base Fee Per Gas */}
-          {block.baseFeePerGas && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Base Fee Per Gas</div>
-              <div className="md:col-span-2 text-slate-600">
-                {String(block.baseFeePerGas)} wei
-              </div>
-            </div>
-          )}
-
-          {/* Blob Gas Used */}
-          {block.blobGasUsed && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Blob Gas Used</div>
-              <div className="md:col-span-2 text-slate-600">
-                {String(block.blobGasUsed)}
-              </div>
-            </div>
-          )}
-
-          {/* Excess Blob Gas */}
-          {block.excessBlobGas && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Excess Blob Gas</div>
-              <div className="md:col-span-2 text-slate-600">
-                {String(block.excessBlobGas)}
-              </div>
-            </div>
-          )}
-
-          {/* Size */}
-          {block.size && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Size</div>
-              <div className="md:col-span-2 text-slate-600">
-                {String(block.size)} bytes
-              </div>
-            </div>
-          )}
-
-          {/* Difficulty */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Difficulty</div>
-            <div className="md:col-span-2 text-slate-600">
-              {String(block.difficulty)}
-            </div>
-          </div>
-
-          {/* Total Difficulty */}
-          <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="font-medium text-slate-700">Total Difficulty</div>
-            <div className="md:col-span-2 text-slate-600">
-              {String(block.totalDifficulty)}
-            </div>
-          </div>
-
-          {/* Nonce */}
-          {block.nonce && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Nonce</div>
-              <div className="md:col-span-2 font-mono text-sm text-slate-600">
-                {block.nonce}
-              </div>
-            </div>
-          )}
-
-          {/* Extra Data */}
-          {block.extraData && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Extra Data</div>
-              <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-                {block.extraData}
-              </div>
-            </div>
-          )}
-
-          {/* State Root */}
-          {block.stateRoot && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">State Root</div>
-              <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-                {block.stateRoot}
-              </div>
-            </div>
-          )}
-
-          {/* Transactions Root */}
-          {block.transactionsRoot && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">
-                Transactions Root
-              </div>
-              <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-                {block.transactionsRoot}
-              </div>
-            </div>
-          )}
-
-          {/* Receipts Root */}
-          {block.receiptsRoot && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Receipts Root</div>
-              <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-                {block.receiptsRoot}
-              </div>
-            </div>
-          )}
-
-          {/* Withdrawals Root */}
-          {block.withdrawalsRoot && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Withdrawals Root</div>
-              <div className="md:col-span-2 font-mono text-sm break-all text-slate-600">
-                {block.withdrawalsRoot}
-              </div>
-            </div>
-          )}
-
-          {/* Withdrawals Count */}
-          {block.withdrawals && block.withdrawals.length > 0 && (
-            <div className="px-6 py-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="font-medium text-slate-700">Withdrawals</div>
-              <div className="md:col-span-2 text-slate-600">
-                {block.withdrawals.length} withdrawals
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function BlockDetailPage({
-  params,
-}: {
-  params: Promise<{ blockNumber: string }>;
-}) {
   return (
     <Suspense
       fallback={
@@ -297,7 +90,37 @@ export default function BlockDetailPage({
         </div>
       }
     >
-      <BlockDetailContent params={params} />
+      <div className="min-h-screen bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 py-8">
+          <div className="mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to blocks
+            </Link>
+          </div>
+
+          <div className="space-y-8">
+            <BlockHeader blockData={blockData} />
+
+            <QuickStats blockData={blockData} />
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              <ValueFlowTimeline
+                blockData={blockData}
+                transactions={transactions}
+              />
+              <GasEfficiencyGauge blockData={blockData} />
+            </div>
+
+            <TransactionMatrix transactions={transactions} />
+
+            <RecentTransactions transactions={transactions} limit={8} />
+          </div>
+        </div>
+      </div>
     </Suspense>
   );
 }

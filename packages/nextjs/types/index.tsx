@@ -28,3 +28,26 @@ export type BlockType = {
   withdrawals: any[]; // Could be further typed based on withdrawal structure
   withdrawalsRoot: string | null;
 };
+
+export interface BlockData {
+  number: number;
+  timestamp: string;
+  hash: string;
+  parentHash: string;
+  miner: string;
+  gasUsed: number;
+  gasLimit: number;
+  baseFee: number;
+  transactions: number;
+  totalValue: number;
+  avgGasPrice: number;
+  blockReward: number;
+  size: number;
+}
+
+export interface Transaction {
+  hash: string;
+  value: number;
+  gasUsed: number;
+  status: "success" | "failed";
+}
