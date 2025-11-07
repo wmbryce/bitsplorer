@@ -82,6 +82,14 @@ export default function BlockDetailPage({
     fetchBlockDetails();
   }, [blockNumber, chainConfig.chain]);
 
+  if (!block) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg text-slate-600">Block not found</div>
+      </div>
+    );
+  }
+
   return (
     <Suspense
       fallback={
@@ -103,8 +111,7 @@ export default function BlockDetailPage({
           </div>
 
           <div className="space-y-8">
-            <BlockHeader blockData={blockData} />
-
+            <BlockHeader block={block} />
             <QuickStats blockData={blockData} />
 
             <div className="grid gap-4 lg:grid-cols-3">
