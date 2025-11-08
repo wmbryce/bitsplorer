@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, serializeTransaction } from "viem";
 import { getChainConfig } from "@/utils/chains";
-import type { BlockType } from "@/types";
+import type { BlockType, ViemTransaction } from "@/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,17 +13,7 @@ const serializeBlock = (block: BlockType) => {
     return transactions.map((tx) => {
       if (typeof tx === "string") return tx; // Just a hash
       // Full transaction object with potential BigInt values
-      return {
-        ...tx,
-        blockNumber: tx.blockNumber?.toString(),
-        gas: tx.gas?.toString(),
-        gasPrice: tx.gasPrice?.toString(),
-        maxFeePerGas: tx.maxFeePerGas?.toString(),
-        maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
-        value: tx.value?.toString(),
-        chainId: tx.chainId?.toString(),
-        v: tx.v?.toString(),
-      };
+      return serializeTransaction(tx);
     });
   };
 

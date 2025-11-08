@@ -1,3 +1,84 @@
+// Viem Transaction type - represents a full transaction object returned from getBlock with includeTransactions: true
+export type ViemTransaction = {
+  // Transaction identifiers
+  hash: string;
+  nonce: bigint;
+  blockHash: string | null;
+  blockNumber: bigint | null;
+  transactionIndex: bigint | null;
+
+  // Addresses
+  from: string;
+  to: string | null; // null for contract creation
+
+  // Value and data
+  value: bigint;
+  input: string; // Transaction calldata
+
+  // Gas
+  gas: bigint; // Gas limit
+  gasPrice?: bigint; // Legacy transactions
+
+  // EIP-1559 (Type 2 transactions)
+  maxFeePerGas?: bigint | null;
+  maxPriorityFeePerGas?: bigint | null;
+
+  // Transaction type (0 = legacy, 1 = EIP-2930, 2 = EIP-1559, 3 = EIP-4844)
+  type: string;
+  typeHex?: string | null;
+
+  // EIP-2930 Access List
+  accessList?: Array<{
+    address: string;
+    storageKeys: string[];
+  }>;
+
+  // Signature
+  v: bigint;
+  r: string;
+  s: string;
+
+  // Chain
+  chainId?: number;
+
+  // EIP-4844 (Blob transactions)
+  blobVersionedHashes?: string[];
+  maxFeePerBlobGas?: bigint;
+
+  // Parsed version (with yParity for newer transaction types)
+  yParity?: number;
+};
+
+// Serialized version (after serializeTransaction - all BigInts become strings)
+export type SerializedTransaction = {
+  hash: string;
+  nonce: string;
+  blockHash: string | null;
+  blockNumber: string | null;
+  transactionIndex: string | null;
+  from: string;
+  to: string | null;
+  value: string;
+  input: string;
+  gas: string;
+  gasPrice?: string;
+  maxFeePerGas?: string | null;
+  maxPriorityFeePerGas?: string | null;
+  type: string;
+  typeHex?: string | null;
+  accessList?: Array<{
+    address: string;
+    storageKeys: string[];
+  }>;
+  v: string;
+  r: string;
+  s: string;
+  chainId?: number;
+  blobVersionedHashes?: string[];
+  maxFeePerBlobGas?: string;
+  yParity?: number;
+};
+
 export type BlockType = {
   baseFeePerGas: bigint | null;
   blobGasUsed: bigint | null;
@@ -20,8 +101,7 @@ export type BlockType = {
   stateRoot: string | null;
   timestamp: bigint | null;
   totalDifficulty: bigint;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  transactions: any[]; // Could be further typed based on transaction structure
+  transactions: string[] | ViemTransaction[]; // Can be hashes or full transactions
   transactionsRoot: string | null;
   uncles: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,11 +123,4 @@ export interface BlockData {
   avgGasPrice: number;
   blockReward: number;
   size: number;
-}
-
-export interface Transaction {
-  hash: string;
-  value: number;
-  gasUsed: number;
-  status: "success" | "failed";
 }
