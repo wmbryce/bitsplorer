@@ -42,7 +42,7 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
     };
   });
 
-  console.log("timeSlots", timeSlots);
+  console.log("timeSlots", timeSlots, block);
 
   return (
     <Card className="p-6 lg:col-span-2">
@@ -62,7 +62,7 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
               />
             </div>
             <div className="text-center">
-              <div className="font-mono text-xs font-bold">{slot.txCount}</div>
+              {/* <div className="font-mono text-xs font-bold">{slot.txCount}</div> */}
               <div className="text-xs text-muted-foreground">{slot.time}</div>
             </div>
           </div>
@@ -71,9 +71,11 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
       <div className="grid grid-cols-3 gap-4 text-center text-sm pt-4 border-t border-border">
         <div>
           <div className="font-mono font-bold text-lg">
-            {formatEther(
-              transactions.reduce((sum, tx) => sum + tx.value, BigInt(0))
-            )}
+            {parseFloat(
+              formatEther(
+                transactions.reduce((sum, tx) => sum + tx.value, BigInt(0))
+              )
+            ).toFixed(6)}
           </div>
           <div className="text-muted-foreground text-xs">Total ETH</div>
         </div>

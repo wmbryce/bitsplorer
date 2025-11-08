@@ -45,7 +45,7 @@ export function RecentTransactions({
                 </div>
               </div>
               <div className="font-mono text-sm font-bold">
-                {parseFloat(formatEther(tx.value)).toFixed(4)} ETH
+                {parseFloat(formatEther(tx.value)).toFixed(6)} ETH
               </div>
               <div className="text-xs text-muted-foreground">
                 Gas: {tx.gas.toString()}

@@ -4,6 +4,8 @@ import { getChainConfig } from "@/utils/chains";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { BlockDetails } from "../_components/BlockDetails";
+import { Suspense } from "react";
+import { SkeletonLayout } from "../_components/SkeletonLayout";
 
 export default async function BlockDetailPage({
   params,
@@ -23,7 +25,9 @@ export default async function BlockDetailPage({
     });
     const blockData = await client.getBlock({
       blockNumber: BigInt(blockNumber),
+      includeTransactions: true,
     });
+    await new Promise((resolve) => setTimeout(resolve, 4000));
     return blockData as unknown as BlockType;
   };
 
@@ -41,7 +45,9 @@ export default async function BlockDetailPage({
             Back to blocks
           </Link>
         </div>
-        <BlockDetails blockPromise={blockPromise} />
+        <Suspense fallback={<SkeletonLayout />}>
+          <BlockDetails blockPromise={blockPromise} />
+        </Suspense>
       </div>
     </div>
   );
