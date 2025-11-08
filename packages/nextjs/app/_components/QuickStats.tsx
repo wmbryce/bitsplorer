@@ -1,35 +1,44 @@
 import { Card } from "@/app/_components/Cardd";
 import { Fuel, DollarSign, Clock, Database } from "lucide-react";
-import type { BlockData } from "@/types";
+import type { BlockType } from "@/types";
+import { formatUnits } from "viem";
 
 interface QuickStatsProps {
-  blockData: BlockData;
+  block: BlockType;
 }
 
-export function QuickStats({ blockData }: QuickStatsProps) {
+export function QuickStats({ block }: QuickStatsProps) {
+  // Convert base fee from wei to gwei
+  const baseFeeGwei = block.baseFeePerGas
+    ? parseFloat(formatUnits(block.baseFeePerGas, 9)).toFixed(2)
+    : "0";
+
+  // Calculate block size in KB
+  const sizeKB = block.size ? (Number(block.size) / 1024).toFixed(1) : "0";
+
   const stats = [
     {
       icon: Fuel,
-      label: "Avg Gas Price",
-      value: `${blockData.avgGasPrice} Gwei`,
+      label: "Base Fee",
+      value: `${baseFeeGwei} Gwei`,
       change: null,
     },
     {
       icon: DollarSign,
-      label: "Block Reward",
-      value: `${blockData.blockReward} ETH`,
+      label: "Gas Limit",
+      value: `${Number(block.gasLimit).toLocaleString()}`,
       change: null,
     },
     {
       icon: Clock,
-      label: "Block Time",
-      value: "12.05s",
+      label: "Transactions",
+      value: `${block.transactions.length}`,
       change: null,
     },
     {
       icon: Database,
       label: "Block Size",
-      value: `${(blockData.size / 1024).toFixed(1)} KB`,
+      value: `${sizeKB} KB`,
       change: null,
     },
   ];

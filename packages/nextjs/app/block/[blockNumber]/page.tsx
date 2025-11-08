@@ -112,7 +112,7 @@ export default function BlockDetailPage({
 
           <div className="space-y-8">
             <BlockHeader block={block} />
-            <QuickStats blockData={blockData} />
+            <QuickStats block={block} />
 
             <div className="grid gap-4 lg:grid-cols-3">
               <ValueFlowTimeline
