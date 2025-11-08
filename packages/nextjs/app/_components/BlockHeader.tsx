@@ -21,7 +21,7 @@ export function BlockHeader({ block }: BlockHeaderProps) {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
           <div className="text-sm text-muted-foreground mb-1">Block Number</div>
-          <h1 className="font-mono text-5xl font-bold">
+          <h1 className="text-5xl font-bold">
             #{block.number?.toString() ?? "N/A"}
           </h1>
         </div>

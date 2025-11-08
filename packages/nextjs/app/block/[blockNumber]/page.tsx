@@ -1,62 +1,33 @@
-"use client";
-
-import { use, useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { BlockType } from "@/types/index";
 import { createPublicClient, http } from "viem";
 import { getChainConfig } from "@/utils/chains";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { BlockHeader } from "@/app/_components/BlockHeader";
-import { QuickStats } from "@/app/_components/QuickStats";
-import { ValueFlowTimeline } from "@/app/_components/FlowValueTimeline";
-import { GasEfficiencyGauge } from "@/app/_components/GasEfficiencyGauge";
-import { TransactionMatrix } from "@/app/_components/TransactionMatrix";
-import { RecentTransactions } from "@/app/_components/RecentTransactions";
+import { BlockDetails } from "../_components/BlockDetails";
 
-export default function BlockDetailPage({
+export default async function BlockDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ blockNumber: string }>;
+  searchParams: Promise<{ chain: string }>;
 }) {
-  const { blockNumber } = use(params);
-  const searchParams = useSearchParams();
-  const chainParam = searchParams.get("chain");
-  const chainConfig = getChainConfig(chainParam);
+  const { blockNumber } = await params;
+  const { chain } = await searchParams;
+  const chainConfig = getChainConfig(chain);
 
-  const [block, setBlock] = useState<BlockType | null>(null);
-  const [status, startTransition, isPending] = useTransition();
-
-  useEffect(() => {
-    const fetchBlockDetails = async () => {
-      try {
-        const client = createPublicClient({
-          chain: chainConfig.chain,
-          transport: http(),
-        });
-
-        const blockData = await client.getBlock({
-          blockNumber: BigInt(blockNumber),
-          includeTransactions: true,
-        });
-
-        setBlock(blockData as unknown as BlockType);
-      } catch (err) {
-        console.error("Error fetching block:", err);
-      }
-    };
-    startTransition(() => {
-      fetchBlockDetails();
+  const getBlock = async () => {
+    const client = createPublicClient({
+      chain: chainConfig.chain,
+      transport: http(),
     });
-  }, [blockNumber, chainConfig.chain, startTransition]);
+    const blockData = await client.getBlock({
+      blockNumber: BigInt(blockNumber),
+    });
+    return blockData as unknown as BlockType;
+  };
 
-  if (!block) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-slate-600">Block not found</div>
-      </div>
-    );
-  }
+  const blockPromise = getBlock();
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -70,18 +41,7 @@ export default function BlockDetailPage({
             Back to blocks
           </Link>
         </div>
-
-        <div className="space-y-8">
-          <BlockHeader block={block} />
-          <QuickStats block={block} />
-
-          <div className="grid gap-4 lg:grid-cols-3">
-            <ValueFlowTimeline block={block} />
-            <GasEfficiencyGauge block={block} />
-          </div>
-          {/* <TransactionMatrix transactions={transactions} /> */}
-          <RecentTransactions transactions={block.transactions} limit={8} />
-        </div>
+        <BlockDetails blockPromise={blockPromise} />
       </div>
     </div>
   );

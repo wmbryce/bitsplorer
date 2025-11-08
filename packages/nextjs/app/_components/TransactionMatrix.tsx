@@ -1,16 +1,13 @@
 import { Card } from "@/app/_components/Card";
-import type { Transaction } from "@/types";
+// import type { Transaction } from "@/types";
+import { cn } from "@/utils/cn";
+import type { ViemTransaction } from "@/types/index";
 
 interface TransactionMatrixProps {
-  transactions: Transaction[];
+  transactions: ViemTransaction[];
 }
 
 export function TransactionMatrix({ transactions }: TransactionMatrixProps) {
-  const successCount = transactions.filter(
-    (t) => t.status === "success"
-  ).length;
-  const failedCount = transactions.filter((t) => t.status === "failed").length;
-
   return (
     <Card className="p-6">
       <h3 className="text-lg font-semibold mb-4">Transaction Matrix</h3>
@@ -18,10 +15,12 @@ export function TransactionMatrix({ transactions }: TransactionMatrixProps) {
         {transactions.map((tx, i) => (
           <div
             key={i}
-            className={`aspect-square rounded-sm ${
-              tx.status === "success" ? "bg-green-500/80" : "bg-red-500/80"
-            } hover:scale-110 transition-transform cursor-pointer`}
-            title={`${tx.status} - ${tx.value.toFixed(4)} ETH`}
+            className={cn(
+              "aspect-square rounded-sm",
+              "bg-gray-700",
+              "hover:scale-110 transition-transform cursor-pointer"
+            )}
+            // title={`${tx.status} - ${tx.value.toFixed(4)} ETH`}
           />
         ))}
       </div>
@@ -29,12 +28,12 @@ export function TransactionMatrix({ transactions }: TransactionMatrixProps) {
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-sm bg-green-500/80" />
           <span className="text-muted-foreground">
-            Success ({successCount})
+            Success ({transactions.length})
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-sm bg-red-500/80" />
-          <span className="text-muted-foreground">Failed ({failedCount})</span>
+          {/* <span className="text-muted-foreground">Failed ({failedCount})</span> */}
         </div>
       </div>
     </Card>
