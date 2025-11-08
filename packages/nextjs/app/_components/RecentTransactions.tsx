@@ -1,5 +1,5 @@
-import { Card } from "@/app/_components/Cardd";
-import type { Transaction } from "./types";
+import { Card } from "@/app/_components/Card";
+import type { Transaction } from "@/types";
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -32,10 +32,10 @@ export function RecentTransactions({
               </div>
             </div>
             <div className="font-mono text-sm font-bold">
-              {tx.value.toFixed(4)} ETH
+              {Number(tx.value ?? 0).toFixed(4)} ETH
             </div>
             <div className="text-xs text-muted-foreground">
-              {tx.gasUsed.toLocaleString()}
+              {Number(tx.gasUsed ?? 0).toLocaleString()}
             </div>
           </div>
         ))}

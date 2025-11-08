@@ -1,4 +1,4 @@
-import { Card } from "@/app/_components/Cardd";
+import { Card } from "@/app/_components/Card";
 import type { Transaction } from "@/types";
 
 interface TransactionMatrixProps {

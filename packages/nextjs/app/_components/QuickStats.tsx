@@ -1,4 +1,4 @@
-import { Card } from "@/app/_components/Cardd";
+import { Card } from "@/app/_components/Card";
 import { Fuel, DollarSign, Clock, Database } from "lucide-react";
 import type { BlockType } from "@/types";
 import { formatUnits } from "viem";

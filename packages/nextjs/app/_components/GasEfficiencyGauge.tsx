@@ -1,12 +1,12 @@
-import { Card } from "@/app/_components/Cardd";
-import type { BlockData } from "@/types";
+import { Card } from "@/app/_components/Card";
+import type { BlockType } from "@/types";
 
 interface GasEfficiencyGaugeProps {
-  blockData: BlockData;
+  block: BlockType;
 }
 
-export function GasEfficiencyGauge({ blockData }: GasEfficiencyGaugeProps) {
-  const efficiency = (blockData.gasUsed / blockData.gasLimit) * 100;
+export function GasEfficiencyGauge({ block }: GasEfficiencyGaugeProps) {
+  const efficiency = (Number(block.gasUsed) / Number(block.gasLimit)) * 100;
   const rotation = (efficiency / 100) * 180 - 90;
 
   return (
@@ -55,13 +55,13 @@ export function GasEfficiencyGauge({ blockData }: GasEfficiencyGaugeProps) {
         <div className="flex justify-between">
           <span className="text-muted-foreground">Used</span>
           <span className="font-mono">
-            {blockData.gasUsed.toLocaleString()}
+            {Number(block.gasUsed).toLocaleString()}
           </span>
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Limit</span>
           <span className="font-mono">
-            {blockData.gasLimit.toLocaleString()}
+            {Number(block.gasLimit).toLocaleString()}
           </span>
         </div>
       </div>

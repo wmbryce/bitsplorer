@@ -1,4 +1,4 @@
-import { Card } from "@/app/_components/Cardd";
+import { Card } from "@/app/_components/Card";
 import type { BlockType } from "@/types";
 
 interface BlockHeaderProps {

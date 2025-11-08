@@ -1,32 +1,31 @@
-import { Card } from "@/app/_components/Cardd";
-import type { BlockData, Transaction } from "@/types/index";
+import { Card } from "@/app/_components/Card";
+import type { BlockType } from "@/types/index";
 
 interface ValueFlowTimelineProps {
-  blockData: BlockData;
-  transactions: Transaction[];
+  block: BlockType;
 }
 
-export function ValueFlowTimeline({
-  blockData,
-  transactions,
-}: ValueFlowTimelineProps) {
+export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
   // Group transactions into time slots (10 slots)
   const timeSlots = Array.from({ length: 10 }, (_, i) => {
-    const slotSize = Math.ceil(transactions.length / 10);
-    const slotTransactions = transactions.slice(
+    const slotSize = Math.ceil(block.transactions.length / 10);
+    const slotTransactions = block.transactions.slice(
       i * slotSize,
       (i + 1) * slotSize
     );
 
     return {
       time: `+${(i * 0.5).toFixed(1)}s`,
-      value: slotTransactions.reduce((sum, tx) => sum + tx.value, 0),
+      value: slotTransactions.reduce(
+        (sum, tx) => sum + Number(tx.value ?? 0),
+        0
+      ),
       txCount: slotTransactions.length,
     };
   });
 
-  const maxValue = Math.max(...timeSlots.map((s) => s.value));
-  const largestTx = Math.max(...transactions.map((t) => t.value));
+  const maxValue = Math.max(...timeSlots.map((s) => Number(s.value)));
+  const largestTx = Math.max(...block.transactions.map((t) => Number(t.value)));
 
   return (
     <Card className="p-6 lg:col-span-2">
@@ -39,7 +38,7 @@ export function ValueFlowTimeline({
                 className="w-full bg-gradient-to-t from-primary via-primary/70 to-primary/40 rounded-t transition-all hover:from-primary/90"
                 style={{
                   height: `${
-                    maxValue > 0 ? (slot.value / maxValue) * 100 : 0
+                    maxValue > 0 ? (Number(slot.value) / maxValue) * 100 : 0
                   }%`,
                 }}
               />
@@ -54,13 +53,25 @@ export function ValueFlowTimeline({
       <div className="grid grid-cols-3 gap-4 text-center text-sm pt-4 border-t border-border">
         <div>
           <div className="font-mono font-bold text-lg">
-            {blockData.totalValue.toFixed(2)}
+            {Number(
+              block.transactions.reduce(
+                (sum, tx) => sum + Number(tx.value ?? 0),
+                0
+              )
+            ).toFixed(2)}
           </div>
           <div className="text-muted-foreground text-xs">Total ETH</div>
         </div>
         <div>
           <div className="font-mono font-bold text-lg">
-            {(blockData.totalValue / blockData.transactions).toFixed(3)}
+            {(
+              Number(
+                block.transactions.reduce(
+                  (sum, tx) => sum + Number(tx.value ?? 0),
+                  0
+                )
+              ) / block.transactions.length
+            ).toFixed(3)}
           </div>
           <div className="text-muted-foreground text-xs">Avg per Tx</div>
         </div>
