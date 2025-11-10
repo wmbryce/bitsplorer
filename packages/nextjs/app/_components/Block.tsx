@@ -54,26 +54,37 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
           </p>
         </div>
         <BlobVisualizer
-          minted={index !== 0}
+          minted={isFullBlock}
           transactionCount={isFullBlock ? block.transactions.length : 0}
         />
       </div>
     </>
   );
 
-  console.log(block.number, index);
   return (
     <motion.li
       layoutId={`block-${block.number}`}
-      key={`block-${block.number}`}
-      initial={{ opacity: index === 0 ? 0 : 1, y: -180 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.04,
-        ease: "easeInOut",
+      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+      animate={{
+        opacity: 1,
+        height: "auto",
+        marginBottom: 16,
+        transition: {
+          duration: 0.4,
+          ease: "easeIn",
+          height: { duration: 0.5 },
+          opacity: { duration: 0.4, delay: 0.1 },
+        },
       }}
-      layout="position"
+      exit={{
+        opacity: 0,
+        height: 0,
+        marginBottom: 0,
+        transition: {
+          duration: 0.4,
+          // ease: [0.4, 0, 1, 1],
+        },
+      }}
       className={`flex flex-col md:flex-row gap-3 flex-1 bg-slate-50 p-4 w-full border border-slate-200 rounded-md ${
         isFullBlock
           ? "cursor-pointer hover:border-slate-400 hover:shadow-md transition-all"
