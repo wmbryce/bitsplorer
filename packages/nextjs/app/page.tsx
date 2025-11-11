@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import IncomingBlocks from "./_components/IncomingBlocks";
+import IncomingBlocksSkeleton from "./_components/IncomingBlocksSkeleton";
 import { getChainConfig, getChainIds, SUPPORTED_CHAINS } from "@/utils/chains";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useBlockStream } from "@/hooks/useBlockStream";
@@ -77,7 +78,11 @@ function BitsplorerContent() {
         </div>
       </header>
       <main className="flex flex-col flex-1 h-full w-full">
-        <IncomingBlocks blocks={blocks} loading={loading} />
+        {loading && blocks.length === 0 ? (
+          <IncomingBlocksSkeleton />
+        ) : (
+          <IncomingBlocks blocks={blocks} />
+        )}
       </main>
     </section>
   );

@@ -27,7 +27,6 @@ export default async function BlockDetailPage({
       blockNumber: BigInt(blockNumber),
       includeTransactions: true,
     });
-    await new Promise((resolve) => setTimeout(resolve, 4000));
     return blockData as unknown as BlockType;
   };
 
