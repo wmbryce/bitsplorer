@@ -38,7 +38,7 @@ export default async function BlockDetailPage({
         <div className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:underline transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to blocks

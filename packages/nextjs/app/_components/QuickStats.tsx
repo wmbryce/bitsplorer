@@ -49,13 +49,15 @@ export function QuickStats({ block }: QuickStatsProps) {
         <Card key={i} className="p-4">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2">
-              <stat.icon className="h-5 w-5 text-primary" />
+              <stat.icon className="h-5 w-5 text-primary text-slate-800" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-1">
+              <div className="text-xs font-semibold text-muted-foreground mb-1">
                 {stat.label}
               </div>
-              <div className="font-mono font-bold text-sm">{stat.value}</div>
+              <div className="font-mono font-bold text-slate-900 text-sm">
+                {stat.value}
+              </div>
               {stat.change && (
                 <div className="text-xs text-green-600">{stat.change}</div>
               )}
