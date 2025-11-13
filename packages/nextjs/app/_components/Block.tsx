@@ -49,7 +49,7 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
       </div>
       <div className="flex flex-col flex-1">
         <div className="flex flex-row items-center pl-2 bg-slate-200 rounded-md mb-2 z-10">
-          <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-fit h-[16px] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-fit h-[16px] overflow-hidden font-mono text-ellipsis whitespace-nowrap">
             {isFullBlock && block?.hash}
           </p>
         </div>
