@@ -46,41 +46,46 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
 
   return (
     <Card className="p-6 lg:col-span-2">
-      <h3 className="text-lg font-semibold mb-4">Value Flow Timeline</h3>
-      <div className="flex items-end justify-between gap-2 h-48 mb-4">
+      <h3 className="text-lg font-semibold tracking-tighter mb-4">
+        Value Flow Timeline
+      </h3>
+      <div className="flex items-end justify-between gap-2 h-50 mb-4 bg-slate-200 rounded-md p-4">
         {timeSlots.map((slot, i) => (
           <div
             key={i}
-            className="flex-1 h-full flex flex-col items-center gap-2"
+            className="flex-1 h-full flex flex-col items-center gap-2 bg-slate-100 rounded-md"
           >
             <div className="w-full flex flex-col justify-end h-full">
               <div
-                className="w-full bg-gray-700 rounded-t h-full"
+                className="w-full bg-gray-600 rounded-t h-full"
                 style={{
                   height: chartHeights[i].height,
                 }}
               />
             </div>
             <div className="text-center">
-              {/* <div className="font-mono text-xs font-bold">{slot.txCount}</div> */}
-              <div className="text-xs text-muted-foreground">{slot.time}</div>
+              <div className="text-xs font-semibold text-muted-foreground pb-2">
+                {slot.time}
+              </div>
             </div>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4 text-center text-sm pt-4 border-t border-border">
-        <div>
-          <div className="font-mono font-bold text-lg">
+      <div className="grid grid-cols-3 gap-4 text-center text-sm">
+        <div className="bg-slate-200 rounded-md p-4">
+          <div className="font-mono font-bold text-lg text-slate-900">
             {parseFloat(
               formatEther(
                 transactions.reduce((sum, tx) => sum + tx.value, BigInt(0))
               )
             ).toFixed(6)}
           </div>
-          <div className="text-muted-foreground text-xs">Total ETH</div>
+          <div className="text-muted-foreground text-xs font-semibold">
+            Total ETH
+          </div>
         </div>
-        <div>
-          <div className="font-mono font-bold text-lg">
+        <div className="bg-slate-200 rounded-md p-4">
+          <div className="font-mono font-bold text-lg text-slate-900">
             {(
               Number(
                 formatEther(
@@ -89,13 +94,17 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
               ) / transactions.length
             ).toFixed(3)}
           </div>
-          <div className="text-muted-foreground text-xs">Avg per Tx</div>
+          <div className="text-muted-foreground text-xs font-semibold">
+            Avg per Tx
+          </div>
         </div>
-        <div>
-          <div className="font-mono font-bold text-lg">
+        <div className="bg-slate-200 rounded-md p-4">
+          <div className="font-mono font-bold text-lg text-slate-900">
             {largestTx.toFixed(2)}
           </div>
-          <div className="text-muted-foreground text-xs">Largest Tx</div>
+          <div className="text-muted-foreground text-xs font-semibold">
+            Largest Tx
+          </div>
         </div>
       </div>
     </Card>

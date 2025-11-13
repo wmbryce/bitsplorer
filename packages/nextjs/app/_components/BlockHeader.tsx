@@ -22,53 +22,54 @@ export function BlockHeader({ block }: BlockHeaderProps) {
     : 0;
 
   return (
-    <Card className="p-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div>
-          <div className="text-xs font-semibold text-muted-foreground mb-1">
-            Block Number
-          </div>
-          <h1 className="text-5xl font-bold text-slate-900 tracking-tighter">
-            <span className="text-3xl font-bold text-slate-500 mr-1">#</span>
-            {block.number?.toString() ?? "N/A"}
-          </h1>
-        </div>
-        <div className="flex gap-8">
+    <Card className="p-4 bg-slate-100">
+      <div className="bg-slate-200 rounded-md p-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
             <div className="text-xs font-semibold text-muted-foreground mb-1">
-              Timestamp
+              Block Number
             </div>
-            <div className="font-mono text-sm font-semibold text-slate-600 bg-slate-200 rounded-md px-3 py-2">
-              {timestamp}
+            <h1 className="text-5xl font-bold text-slate-900 tracking-tighter">
+              <span className="text-3xl font-bold text-slate-500 mr-1">#</span>
+              {block.number?.toString() ?? "N/A"}
+            </h1>
+          </div>
+          <div className="flex gap-8 bg-slate-100 rounded-md p-4">
+            <div>
+              <div className="text-xs font-semibold text-muted-foreground mb-1">
+                Timestamp
+              </div>
+              <div className="font-mono text-sm font-semibold text-slate-600 bg-slate-200 rounded-md px-3 py-2">
+                {timestamp}
+              </div>
             </div>
+            <div>
+              <div className="text-xs font-semibold text-muted-foreground mb-1">
+                Transactions
+              </div>
+              <div className="font-mono text-2xl font-bold text-slate-900 bg-slate-200 rounded-md px-3 py-1">
+                {txCount}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 bg-slate-100 rounded-md p-4">
+          <div>
+            <div className="text-xs font-semibold text-muted-foreground mb-1">
+              Block Hash
+            </div>
+            <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all overflow-hidden text-ellipsis whitespace-nowrap bg-slate-200">
+              {block.hash ?? "N/A"}
+            </code>
           </div>
           <div>
             <div className="text-xs font-semibold text-muted-foreground mb-1">
-              Transactions
+              Miner
             </div>
-            <div className="font-mono text-2xl font-bold text-slate-900 ">
-              {txCount}
-            </div>
+            <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all bg-slate-200">
+              {block.miner}
+            </code>
           </div>
-        </div>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2">
-        <div>
-          <div className="text-xs font-semibold text-muted-foreground mb-1">
-            Block Hash
-          </div>
-          <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all overflow-hidden text-ellipsis whitespace-nowrap bg-slate-200">
-            {block.hash ?? "N/A"}
-          </code>
-        </div>
-        <div>
-          <div className="text-xs font-semibold text-muted-foreground mb-1">
-            Miner
-          </div>
-          <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all bg-slate-200">
-            {block.miner}
-          </code>
         </div>
       </div>
     </Card>
