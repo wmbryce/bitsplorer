@@ -22,7 +22,7 @@ export function BlockDetails({ blockPromise }: BlockDetailsProps) {
         <GasEfficiencyGauge block={block} />
       </div>
       {/* <TransactionMatrix transactions={transactions} /> */}
-      <RecentTransactions transactions={block.transactions} limit={8} />
+      <RecentTransactions transactions={block.transactions} itemsPerPage={8} />
     </div>
   );
 }
