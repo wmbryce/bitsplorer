@@ -10,11 +10,11 @@ export function GasEfficiencyGauge({ block }: GasEfficiencyGaugeProps) {
   const rotation = (efficiency / 100) * 180 - 90;
 
   return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold tracking-tighter mb-4">
+    <Card className="p-4 sm:p-6">
+      <h3 className="text-base sm:text-lg font-semibold tracking-tighter mb-3 sm:mb-4">
         Gas Efficiency
       </h3>
-      <div className="relative w-full mx-auto bg-slate-200 rounded-md p-4">
+      <div className="relative w-full max-w-md mx-auto bg-slate-200 rounded-md p-3 sm:p-4">
         <svg viewBox="0 0 200 120" className="w-full bg-slate-100 rounded-md">
           {/* Background arc */}
           <path
@@ -47,25 +47,24 @@ export function GasEfficiencyGauge({ block }: GasEfficiencyGaugeProps) {
           <circle cx="100" cy="100" r="8" className="fill-foreground" />
         </svg>
         <div className="text-center mt-2">
-          <div className="text-3xl font-bold font-mono text-slate-900">
+          <div className="text-2xl sm:text-3xl md:text-4xl font-bold font-mono text-slate-900">
             {efficiency.toFixed(1)}%
           </div>
-          <div className="text-xs font-semibold text-muted-foreground">
+          <div className="text-xs sm:text-sm font-semibold text-muted-foreground">
             Utilization
           </div>
         </div>
       </div>
-      <div className="mt-4 space-y-2 text-sm bg-slate-200 rounded-md p-4">
-        <div className="flex justify-between">
+      <div className="mt-3 sm:mt-4 space-y-2 text-xs sm:text-sm bg-slate-200 rounded-md p-3 sm:p-4">
+        <div className="flex justify-between items-center gap-2">
           <span className="text-muted-foreground font-semibold">Used</span>
-          <span className="font-mono text-slate-900">
+          <span className="font-mono text-slate-900 break-all text-right">
             {Number(block.gasUsed).toLocaleString()}
           </span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center gap-2">
           <span className="text-muted-foreground font-semibold">Limit</span>
-          <span className="font-mono text-slate-900"></span>
-          <div className="font-mono text-slate-900">
+          <div className="font-mono text-slate-900 break-all text-right">
             {Number(block.gasLimit).toLocaleString()}
           </div>
         </div>

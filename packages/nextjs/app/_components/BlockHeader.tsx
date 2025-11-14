@@ -53,12 +53,12 @@ export function BlockHeader({ block }: BlockHeaderProps) {
             </div>
           </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 bg-slate-100 rounded-md p-4">
+        <div className="grid gap-3 md:grid-cols-2 bg-slate-100 rounded-md p-4 overflow-scroll">
           <div>
             <div className="text-xs font-semibold text-muted-foreground mb-1">
               Block Hash
             </div>
-            <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all overflow-hidden text-ellipsis whitespace-nowrap bg-slate-200">
+            <code className="block w-full rounded bg-muted px-2 py-2 font-semibold uppercase text-slate-600 font-mono text-[10px] sm:text-xs whitespace-nowrap overflow-x-auto bg-slate-200">
               {block.hash ?? "N/A"}
             </code>
           </div>
@@ -66,7 +66,7 @@ export function BlockHeader({ block }: BlockHeaderProps) {
             <div className="text-xs font-semibold text-muted-foreground mb-1">
               Miner
             </div>
-            <code className="block rounded bg-muted px-3 py-2 font-semibold uppercase text-slate-600 font-mono text-xs break-all bg-slate-200">
+            <code className="block rounded bg-muted px-2 py-2 font-semibold uppercase text-slate-600 font-mono text-[10px] sm:text-xs whitespace-nowrap overflow-x-auto bg-slate-200">
               {block.miner}
             </code>
           </div>
