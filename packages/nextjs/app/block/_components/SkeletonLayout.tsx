@@ -19,32 +19,34 @@ export function SkeletonLayout() {
   return (
     <div className="space-y-8">
       {/* BlockHeader Skeleton */}
-      <Card className="p-8 bg-slate-200">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div>
-            <Skeleton className="w-24 h-4 mb-1" />
-            <Skeleton className="w-48 h-12" />
-          </div>
-          <div className="flex gap-8 bg-slate-100 rounded-md p-4">
+      <Card className="p-4 bg-slate-100">
+        <div className="bg-slate-200 rounded-md p-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <Skeleton className="w-16 h-3 mb-1" />
-              <Skeleton className="w-32 h-5" />
+              <Skeleton className="w-24 h-4 mb-1" />
+              <Skeleton className="w-48 h-12" />
             </div>
+            <div className="flex gap-8 bg-slate-100 rounded-md p-4">
+              <div>
+                <Skeleton className="w-16 h-3 mb-1" />
+                <Skeleton className="w-32 h-5" />
+              </div>
+              <div>
+                <Skeleton className="w-20 h-3 mb-1" />
+                <Skeleton className="w-16 h-8" />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2 bg-slate-100 rounded-md p-4">
             <div>
               <Skeleton className="w-20 h-3 mb-1" />
-              <Skeleton className="w-16 h-8" />
+              <Skeleton className="w-full h-10 rounded" />
             </div>
-          </div>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-2 bg-slate-100 rounded-md p-4">
-          <div>
-            <Skeleton className="w-20 h-3 mb-1" />
-            <Skeleton className="w-full h-10 rounded" />
-          </div>
-          <div>
-            <Skeleton className="w-12 h-3 mb-1" />
-            <Skeleton className="w-full h-10 rounded" />
+            <div>
+              <Skeleton className="w-12 h-3 mb-1" />
+              <Skeleton className="w-full h-10 rounded" />
+            </div>
           </div>
         </div>
       </Card>

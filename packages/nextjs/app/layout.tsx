@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          `${inter.variable} antialiased`,
+          `${inter.variable} font-sans antialiased`,
           "flex flex-col flex-1 h-full px-4 max-w-[900px] mx-auto bg-slate-100"
         )}
       >

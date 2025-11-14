@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import BlobVisualizer from "@/app/_components/BlobVisualizer";
 import Skeleton from "@/app/_components/Skeleton";
 import type { BlockType } from "@/types/index";
@@ -24,7 +25,9 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
   const blockLink = `/block/${block.number}${
     chainParam ? `?chain=${chainParam}` : ""
   }`;
-  const isFullBlock = isBlockType(block);
+  const isFullBlock = useMemo(() => isBlockType(block), [block]);
+
+  console.log("block", block, "isFullBlock", isFullBlock);
 
   const blockContent = (
     <>
@@ -35,7 +38,9 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
         </h2>
         {isFullBlock ? (
           <p className="text-md font-semibold text-slate-600 whitespace-nowrap my-0">
-            {new Date(Number(block?.timestamp) * 1000).toLocaleString("en-GB", {
+            {new Date(
+              Number((block as BlockType)?.timestamp) * 1000
+            ).toLocaleString("en-GB", {
               timeZone: "GMT",
               hour: "2-digit",
               minute: "2-digit",
@@ -50,12 +55,14 @@ const Block: React.FC<BlockProps> = ({ block, index }) => {
       <div className="flex flex-col flex-1">
         <div className="flex flex-row items-center pl-2 bg-slate-200 rounded-md mb-2 z-10">
           <p className="text-xs font-semibold text-slate-600 my-1 uppercase w-fit h-[16px] overflow-hidden font-mono text-ellipsis whitespace-nowrap">
-            {isFullBlock && block?.hash}
+            {isFullBlock && (block as BlockType)?.hash}
           </p>
         </div>
         <BlobVisualizer
           minted={isFullBlock}
-          transactionCount={isFullBlock ? block.transactions.length : 0}
+          transactionCount={
+            isFullBlock ? (block as BlockType).transactions.length : 0
+          }
         />
       </div>
     </>

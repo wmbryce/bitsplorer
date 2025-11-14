@@ -4,6 +4,7 @@ import { Card } from "@/app/_components/Card";
 import type { ViemTransaction } from "@/types";
 import { formatEther } from "viem";
 import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface RecentTransactionsProps {
   transactions: string[] | ViemTransaction[];
@@ -137,19 +138,19 @@ export function RecentTransactions({
                 <button
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
-                  className="px-3 py-1 text-sm rounded-md border border-border hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1 text-sm rounded-md bg-slate-200 hover:bg-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  <ChevronLeft className="h-4 w-4" />
                 </button>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm font-semibold text-muted-foreground">
                   Page {currentPage} of {totalPages}
                 </div>
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 text-sm rounded-md border border-border hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-1 text-sm rounded-md bg-slate-200 hover:bg-slate-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
             </div>
