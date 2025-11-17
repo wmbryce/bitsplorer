@@ -67,12 +67,12 @@ function BitsplorerContent() {
                     {networkInfo.chainId})
                   </p>
                 )}
-                {latestBlockInfo && (
+                {/* {latestBlockInfo && (
                   <p className="text-sm font-semibold text-green-600 animate-pulse">
                     ⚡ Latest: Block #{String(latestBlockInfo.number)} (
                     {latestBlockInfo.txCount} txs)
                   </p>
-                )}
+                )} */}
               </div>
               {error && (
                 <p className="text-sm font-medium text-red-500 mt-2">{error}</p>
