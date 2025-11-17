@@ -1,15 +1,15 @@
 import { Card } from "@/app/_components/Card";
-import type { BlockType, ViemTransaction } from "@/types/index";
+import type { EVMBlock, EVMTransaction } from "@/types/index";
 import { formatEther } from "viem";
 
 interface ValueFlowTimelineProps {
-  block: BlockType;
+  block: EVMBlock;
 }
 
 export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
   // Group transactions into time slots (10 slots)
   const transactions = block.transactions.filter(
-    (tx): tx is ViemTransaction => typeof tx !== "string"
+    (tx): tx is EVMTransaction => typeof tx !== "string"
   );
 
   const timeSlots = Array.from({ length: 10 }, (_, i) => {
@@ -23,7 +23,7 @@ export function ValueFlowTimeline({ block }: ValueFlowTimelineProps) {
       time: `+${(i * 0.5).toFixed(1)}s`,
       value: formatEther(
         slotTransactions.reduce(
-          (sum: bigint, tx: ViemTransaction) => sum + tx.value,
+          (sum: bigint, tx: EVMTransaction) => sum + tx.value,
           BigInt(0)
         )
       ),

@@ -1,5 +1,14 @@
-// Viem Transaction type - represents a full transaction object returned from getBlock with includeTransactions: true
-export type ViemTransaction = {
+import type { ChainType } from "./chain-types";
+import type {
+  SolanaBlock,
+  SolanaTransaction,
+  SerializedSolanaBlock,
+  SerializedSolanaTransaction,
+} from "./solana";
+
+// EVM Transaction type - represents a full transaction object returned from getBlock with includeTransactions: true
+export type EVMTransaction = {
+  chainType?: "EVM"; // Optional for backward compatibility
   // Transaction identifiers
   hash: string;
   nonce: bigint;
@@ -49,8 +58,9 @@ export type ViemTransaction = {
   yParity?: number;
 };
 
-// Serialized version (after serializeTransaction - all BigInts become strings)
-export type SerializedTransaction = {
+// Serialized EVM transaction (after serializeTransaction - all BigInts become strings)
+export type SerializedEVMTransaction = {
+  chainType?: "EVM";
   hash: string;
   nonce: string;
   blockHash: string | null;
@@ -79,7 +89,8 @@ export type SerializedTransaction = {
   yParity?: number;
 };
 
-export type BlockType = {
+export type EVMBlock = {
+  chainType?: "EVM"; // Optional for backward compatibility
   baseFeePerGas: bigint | null;
   blobGasUsed: bigint | null;
   difficulty: bigint;
@@ -101,7 +112,7 @@ export type BlockType = {
   stateRoot: string | null;
   timestamp: bigint | null;
   totalDifficulty: bigint;
-  transactions: string[] | ViemTransaction[]; // Can be hashes or full transactions
+  transactions: string[] | EVMTransaction[]; // Can be hashes or full transactions
   transactionsRoot: string | null;
   uncles: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -109,18 +120,30 @@ export type BlockType = {
   withdrawalsRoot: string | null;
 };
 
-export interface BlockData {
-  number: number;
-  timestamp: string;
-  hash: string;
-  parentHash: string;
-  miner: string;
-  gasUsed: number;
-  gasLimit: number;
-  baseFee: number;
-  transactions: number;
-  totalValue: number;
-  avgGasPrice: number;
-  blockReward: number;
-  size: number;
+// Discriminated union types for multi-chain support
+export type Block = EVMBlock | SolanaBlock;
+export type Transaction = EVMTransaction | SolanaTransaction;
+export type SerializedTransaction =
+  | SerializedEVMTransaction
+  | SerializedSolanaTransaction;
+
+// Type guards
+export function isEVMBlock(block: Block): block is EVMBlock {
+  return !block.chainType || block.chainType === "EVM";
 }
+
+export function isSolanaBlock(block: Block): block is SolanaBlock {
+  return block.chainType === "SOLANA";
+}
+
+export function isEVMTransaction(tx: Transaction): tx is EVMTransaction {
+  return !tx.chainType || tx.chainType === "EVM";
+}
+
+export function isSolanaTransaction(tx: Transaction): tx is SolanaTransaction {
+  return tx.chainType === "SOLANA";
+}
+
+// Backward compatibility exports
+export type ViemTransaction = EVMTransaction;
+export type BlockType = EVMBlock;

@@ -19,9 +19,12 @@ function BitsplorerContent() {
     chainConfig.id
   );
 
+  // Network info works for both EVM and Solana chains
   const networkInfo = {
-    name: chainConfig.chain.name,
-    chainId: chainConfig.chain.id,
+    name: chainConfig.name,
+    chainId: chainConfig.chainType === 'EVM' && 'chain' in chainConfig 
+      ? chainConfig.chain.id 
+      : chainConfig.id,
   };
 
   const handleChainChange = (newChainId: string) => {
@@ -38,8 +41,8 @@ function BitsplorerContent() {
                 Bitsplorer
               </h1>
               <p className="text-normal font-regular text-slate-700">
-                Explore the latest blocks and transactions on active ethereum
-                chains.
+                Explore the latest blocks and transactions on blockchain
+                networks including Ethereum and Solana.
               </p>
             </div>
             <div className="flex flex-col items-start gap-2 px-4 py-3 bg-slate-100 rounded-md w-full">
@@ -63,13 +66,13 @@ function BitsplorerContent() {
               <div className="flex items-center gap-4 mt-2">
                 {networkInfo && (
                   <p className="text-sm font-medium text-slate-500">
-                    Connected to {networkInfo.name} (Chain ID:{" "}
-                    {networkInfo.chainId})
+                    Connected to {networkInfo.name}
+                    {chainConfig.chainType === 'EVM' && ` (Chain ID: ${networkInfo.chainId})`}
                   </p>
                 )}
                 {latestBlockInfo && (
                   <p className="text-sm font-semibold text-green-600 animate-pulse">
-                    ⚡ Latest: Block #{String(latestBlockInfo.number)} (
+                    ⚡ Latest: {chainConfig.chainType === 'EVM' ? 'Block #' : 'Slot '}{String(latestBlockInfo.number)} (
                     {latestBlockInfo.txCount} txs)
                   </p>
                 )}

@@ -1,61 +1,21 @@
 import { NextRequest } from "next/server";
-import { createPublicClient, http, serializeTransaction } from "viem";
-import { getChainConfig } from "@/utils/chains";
-import type { BlockType, ViemTransaction } from "@/types";
+import { getChainConfig, isSolanaChain } from "@/utils/chains";
+import {
+  fetchBlock,
+  fetchLatestBlockNumber,
+  watchBlocks,
+} from "@/utils/blockchain-providers";
+import { fetchRecentSolanaBlocks } from "@/utils/blockchain-providers/solana-provider";
+import { serializeBlock } from "@/utils/adapters/block-adapter";
+import type { Block } from "@/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const serializeBlock = (block: BlockType) => {
-  // Helper to serialize transactions (which may contain BigInt values)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const serializeTransactions = (transactions: any[]) => {
-    return transactions.map((tx) => {
-      if (typeof tx === "string") return tx; // Just a hash
-      // Full transaction object with potential BigInt values
-      return serializeTransaction(tx);
-    });
-  };
-
-  // Helper to serialize withdrawals
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const serializeWithdrawals = (withdrawals: any[]) => {
-    if (!withdrawals) return withdrawals;
-    return withdrawals.map((withdrawal) => ({
-      ...withdrawal,
-      amount: withdrawal.amount?.toString(),
-      index: withdrawal.index?.toString(),
-      validatorIndex: withdrawal.validatorIndex?.toString(),
-    }));
-  };
-
-  return {
-    ...block,
-    number: block?.number?.toString(),
-    timestamp: block?.timestamp?.toString(),
-    gasLimit: block?.gasLimit?.toString(),
-    gasUsed: block?.gasUsed?.toString(),
-    baseFeePerGas: block?.baseFeePerGas?.toString(),
-    difficulty: block?.difficulty?.toString(),
-    totalDifficulty: block?.totalDifficulty?.toString(),
-    size: block?.size?.toString(),
-    blobGasUsed: block?.blobGasUsed?.toString(),
-    excessBlobGas: block?.excessBlobGas?.toString(),
-    transactions: serializeTransactions(block.transactions || []),
-    withdrawals: serializeWithdrawals(block.withdrawals || []),
-  };
-};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const chainParam = searchParams.get("chain");
   const chainConfig = getChainConfig(chainParam);
-
-  // Create a public client connected to the selected chain
-  const client = createPublicClient({
-    chain: chainConfig.chain,
-    transport: http(),
-  });
 
   // Create a ReadableStream for SSE
   const stream = new ReadableStream({
@@ -72,63 +32,76 @@ export async function GET(request: NextRequest) {
       };
 
       try {
-        // Fetch and send initial blocks
-        const latestBlockNumber = await client.getBlockNumber();
+        // Fetch and send initial blocks using the provider abstraction
         const initialBlocks = [];
 
-        for (let i = 0; i < 5; i++) {
-          const blockNumber = latestBlockNumber - BigInt(i);
-          const block = await client.getBlock({
-            blockNumber,
-            includeTransactions: false,
+        if (isSolanaChain(chainConfig)) {
+          // For Solana, use the special function that fetches confirmed blocks
+          // Fetch fewer blocks to avoid rate limits
+          const solanaBlocks = await fetchRecentSolanaBlocks(chainConfig, 3);
+          solanaBlocks.forEach((block) => {
+            initialBlocks.push(serializeBlock(block));
           });
-
-          // Convert BigInt values to strings for JSON serialization
-          initialBlocks.push(serializeBlock(block as BlockType));
+        } else {
+          // For EVM chains, fetch by block number
+          const latestBlockNumber = await fetchLatestBlockNumber(chainConfig);
+          for (let i = 0; i < 5; i++) {
+            const blockIdentifier = latestBlockNumber - BigInt(i);
+            const block = await fetchBlock(chainConfig, blockIdentifier, false);
+            initialBlocks.push(serializeBlock(block));
+          }
         }
 
         // Send initial blocks
         send({ type: "initial", blocks: initialBlocks }, "initial");
 
-        // Watch for new blocks
-        const unwatch = client.watchBlocks({
-          onBlock: async (block) => {
+        // Watch for new blocks using the provider abstraction
+        const unwatch = watchBlocks(
+          chainConfig,
+          async (block: Block) => {
             try {
-              // Fetch full block details with transactions
-              const fullBlock = await client.getBlock({
-                blockNumber: block.number,
-                includeTransactions: false,
-              });
+              const blockId =
+                chainConfig.chainType === "EVM"
+                  ? "number" in block
+                    ? String(block.number)
+                    : "unknown"
+                  : "slot" in block
+                  ? String(block.slot)
+                  : "unknown";
+
+              const txCount =
+                "transactions" in block && Array.isArray(block.transactions)
+                  ? block.transactions.length
+                  : 0;
 
               console.log(
-                `Block #${fullBlock.number} - ${fullBlock.transactions.length} transactions`
+                `New block: ${
+                  chainConfig.chainType === "EVM" ? "#" : "Slot "
+                }${blockId} - ${txCount} transactions`
               );
 
               // Send new block (convert BigInt values to strings for JSON serialization)
               send(
                 {
                   type: "newBlock",
-                  block: serializeBlock(fullBlock as BlockType),
+                  block: serializeBlock(block),
                 },
                 "block"
               );
             } catch (err) {
-              console.error("Error fetching full block details:", err);
+              console.error("Error processing block:", err);
               // Send error but don't close the stream
               send(
-                { type: "error", message: "Error fetching block details" },
+                { type: "error", message: "Error processing block" },
                 "error"
               );
             }
           },
-          onError: (err) => {
+          (err: Error) => {
             console.error("Error watching blocks:", err);
             send({ type: "error", message: "Error watching blocks" }, "error");
-          },
-          emitOnBegin: false,
-          poll: true,
-          pollingInterval: chainConfig.pollingInterval,
-        });
+          }
+        );
 
         // Handle client disconnect
         request.signal.addEventListener("abort", () => {

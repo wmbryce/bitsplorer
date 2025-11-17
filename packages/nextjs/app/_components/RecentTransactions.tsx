@@ -1,13 +1,14 @@
 "use client";
 
 import { Card } from "@/app/_components/Card";
-import type { ViemTransaction } from "@/types";
+import type { Transaction, EVMTransaction } from "@/types";
+import { isEVMTransaction } from "@/types";
 import { formatEther } from "viem";
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface RecentTransactionsProps {
-  transactions: string[] | ViemTransaction[];
+  transactions: string[] | Transaction[];
   itemsPerPage?: number;
 }
 
@@ -17,20 +18,25 @@ export function RecentTransactions({
 }: RecentTransactionsProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter out string transactions (just hashes) and only show full transaction objects
+  // Filter out string transactions (just hashes/signatures) and only show full transaction objects
   const fullTransactions = transactions.filter(
-    (tx): tx is ViemTransaction => typeof tx !== "string"
+    (tx): tx is Transaction => typeof tx !== "string"
   );
 
-  // Sort transactions by value (transaction size) in descending order
+  // Separate EVM transactions for sorting by value
+  const evmTransactions = fullTransactions.filter(isEVMTransaction);
+
+  // Sort EVM transactions by value (transaction size) in descending order
   const sortedTransactions = useMemo(() => {
-    return [...fullTransactions].sort((a, b) => {
+    // For now, only display EVM transactions with sorting
+    // Solana transaction display would need different handling
+    return [...evmTransactions].sort((a, b) => {
       // Compare bigint values
       if (a.value > b.value) return -1;
       if (a.value < b.value) return 1;
       return 0;
     });
-  }, [fullTransactions]);
+  }, [evmTransactions]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
@@ -82,46 +88,50 @@ export function RecentTransactions({
                 </tr>
               </thead>
               <tbody>
-                {displayTransactions.map((tx, i) => (
-                  <tr
-                    key={tx.hash || i}
-                    className="border-b border-slate-300 hover:bg-muted/30 transition-colors bg-slate-100 rounded-md p-4"
-                  >
-                    <td className="py-3 px-2">
-                      <div className="font-mono text-xs text-muted-foreground truncate max-w-[200px]">
-                        {tx.hash}
-                      </div>
-                    </td>
-                    <td className="py-3 px-2">
-                      <div className="font-mono text-xs text-muted-foreground">
-                        {tx.from.slice(0, 6)}...{tx.from.slice(-4)}
-                      </div>
-                    </td>
-                    <td className="py-3 px-2">
-                      <div className="font-mono text-xs text-muted-foreground">
-                        {tx.to ? (
-                          <>
-                            {tx.to.slice(0, 6)}...{tx.to.slice(-4)}
-                          </>
-                        ) : (
-                          <span className="text-xs italic">
-                            Contract Creation
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-2 text-right">
-                      <div className="font-mono text-sm font-bold">
-                        {parseFloat(formatEther(tx.value)).toFixed(6)}
-                      </div>
-                    </td>
-                    <td className="py-3 px-2 text-right">
-                      <div className="font-mono text-xs text-muted-foreground">
-                        {tx.gas.toString()}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {displayTransactions.map((tx, i) => {
+                  // Type assertion after filtering
+                  const evmTx = tx as EVMTransaction;
+                  return (
+                    <tr
+                      key={evmTx.hash || i}
+                      className="border-b border-slate-300 hover:bg-muted/30 transition-colors bg-slate-100 rounded-md p-4"
+                    >
+                      <td className="py-3 px-2">
+                        <div className="font-mono text-xs text-muted-foreground truncate max-w-[200px]">
+                          {evmTx.hash}
+                        </div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {evmTx.from.slice(0, 6)}...{evmTx.from.slice(-4)}
+                        </div>
+                      </td>
+                      <td className="py-3 px-2">
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {evmTx.to ? (
+                            <>
+                              {evmTx.to.slice(0, 6)}...{evmTx.to.slice(-4)}
+                            </>
+                          ) : (
+                            <span className="text-xs italic">
+                              Contract Creation
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        <div className="font-mono text-sm font-bold">
+                          {parseFloat(formatEther(evmTx.value)).toFixed(6)}
+                        </div>
+                      </td>
+                      <td className="py-3 px-2 text-right">
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {evmTx.gas.toString()}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

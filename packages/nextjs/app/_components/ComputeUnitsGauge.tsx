@@ -1,18 +1,25 @@
 import { Card } from "@/app/_components/Card";
-import type { EVMBlock } from "@/types";
+import type { SolanaBlock } from "@/types/solana";
 
-interface GasEfficiencyGaugeProps {
-  block: EVMBlock;
+interface ComputeUnitsGaugeProps {
+  block: SolanaBlock;
 }
 
-export function GasEfficiencyGauge({ block }: GasEfficiencyGaugeProps) {
-  const efficiency = (Number(block.gasUsed) / Number(block.gasLimit)) * 100;
+export function ComputeUnitsGauge({ block }: ComputeUnitsGaugeProps) {
+  // Solana has a per-block compute unit limit
+  // Note: This is a simplified version - actual compute units per transaction
+  // would need to be extracted from transaction metadata
+  const SOLANA_MAX_COMPUTE_UNITS = 48_000_000; // Per block compute unit limit
+  
+  // For now, estimate based on transaction count (this is approximate)
+  const estimatedComputeUnits = block.transactions.length * 200_000; // Avg per tx
+  const efficiency = Math.min((estimatedComputeUnits / SOLANA_MAX_COMPUTE_UNITS) * 100, 100);
   const rotation = (efficiency / 100) * 180 - 90;
 
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-base sm:text-lg font-semibold tracking-tighter mb-3 sm:mb-4">
-        Gas Efficiency
+        Compute Units
       </h3>
       <div className="relative w-full max-w-md mx-auto bg-slate-200 rounded-md p-3 sm:p-4">
         <svg viewBox="0 0 200 120" className="w-full bg-slate-100 rounded-md">
@@ -51,24 +58,25 @@ export function GasEfficiencyGauge({ block }: GasEfficiencyGaugeProps) {
             {efficiency.toFixed(1)}%
           </div>
           <div className="text-xs sm:text-sm font-semibold text-muted-foreground">
-            Utilization
+            Est. Utilization
           </div>
         </div>
       </div>
       <div className="mt-3 sm:mt-4 space-y-2 text-xs sm:text-sm bg-slate-200 rounded-md p-3 sm:p-4">
         <div className="flex justify-between items-center gap-2">
-          <span className="text-muted-foreground font-semibold">Used</span>
+          <span className="text-muted-foreground font-semibold">Est. Used</span>
           <span className="font-mono text-slate-900 break-all text-right">
-            {Number(block.gasUsed).toLocaleString()}
+            {estimatedComputeUnits.toLocaleString()} CU
           </span>
         </div>
         <div className="flex justify-between items-center gap-2">
-          <span className="text-muted-foreground font-semibold">Limit</span>
+          <span className="text-muted-foreground font-semibold">Block Limit</span>
           <div className="font-mono text-slate-900 break-all text-right">
-            {Number(block.gasLimit).toLocaleString()}
+            {SOLANA_MAX_COMPUTE_UNITS.toLocaleString()} CU
           </div>
         </div>
       </div>
     </Card>
   );
 }
+
