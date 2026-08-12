@@ -13,8 +13,8 @@ This project uses pnpm workspaces to manage multiple packages:
 
 ### Prerequisites
 
-- Node.js (v20+)
-- pnpm (v10+)
+- Node.js 22.x (pinned by `engines.node` and `.nvmrc`)
+- pnpm 10.5.2 (pinned by `packageManager`)
 
 ### Installation
 
