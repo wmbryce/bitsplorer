@@ -13,8 +13,8 @@ This project uses pnpm workspaces to manage multiple packages:
 
 ### Prerequisites
 
-- Node.js (v20+)
-- pnpm (v10+)
+- Node.js 22.x (pinned by `engines.node` and `.nvmrc`)
+- pnpm 10.5.2 (pinned by `packageManager`)
 
 ### Installation
 
@@ -103,6 +103,14 @@ bitsplorer/
 ├── pnpm-workspace.yaml
 └── package.json
 ```
+
+## 🚢 Deployment
+
+See [`DEPLOY.md`](./DEPLOY.md) for the Vercel runbook. Note that the app needs an
+Ethereum RPC endpoint per chain (`RPC_URL_MAINNET`, `RPC_URL_SEPOLIA`,
+`RPC_URL_BASE`) — see [`packages/nextjs/.env.example`](./packages/nextjs/.env.example).
+Without them it falls back to viem's public defaults, most of which are dead or
+rate-limited.
 
 ## 🔗 Links
 

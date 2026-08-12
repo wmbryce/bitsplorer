@@ -1,6 +1,6 @@
 import { BlockType } from "@/types/index";
-import { createPublicClient, http } from "viem";
 import { getChainConfig } from "@/utils/chains";
+import { createChainClient } from "@/utils/rpc";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { BlockDetails } from "../_components/BlockDetails";
@@ -19,10 +19,7 @@ export default async function BlockDetailPage({
   const chainConfig = getChainConfig(chain);
 
   const getBlock = async () => {
-    const client = createPublicClient({
-      chain: chainConfig.chain,
-      transport: http(),
-    });
+    const client = createChainClient(chainConfig);
     const blockData = await client.getBlock({
       blockNumber: BigInt(blockNumber),
       includeTransactions: true,

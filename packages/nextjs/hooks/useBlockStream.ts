@@ -37,7 +37,6 @@ export function useBlockStream(chainId: string): UseBlockStreamReturn {
     eventSource.addEventListener("initial", (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("Received initial blocks:", data.blocks.length);
 
         // Convert string values back to BigInt for blocks
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,8 +82,6 @@ export function useBlockStream(chainId: string): UseBlockStreamReturn {
       try {
         const data = JSON.parse(event.data);
         const block = data.block;
-
-        console.log(`New block detected: #${block.number}`);
 
         // Convert string values back to BigInt
         const fullBlock: BlockType = {
@@ -148,13 +145,11 @@ export function useBlockStream(chainId: string): UseBlockStreamReturn {
 
     // Handle connection open
     eventSource.onopen = () => {
-      console.log("SSE connection opened");
       setError(null);
     };
 
     // Cleanup function
     return () => {
-      console.log("Closing SSE connection");
       eventSource.close();
     };
   }, [chainId]);

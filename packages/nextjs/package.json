@@ -2,6 +2,9 @@
   "name": "@bitsplorer/nextjs",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,6 +15,7 @@
     "@tanstack/react-query": "^5.90.5",
     "clsx": "^2.1.1",
     "install": "^0.13.0",
+    "lucide-react": "^0.552.0",
     "motion": "^12.23.24",
     "next": "16.1.6",
     "react": "19.2.4",
