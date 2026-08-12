@@ -72,6 +72,7 @@ Set these on the import screen (or later under **Settings → Build and Deployme
 | Install Command | leave default | Set in `packages/nextjs/vercel.json` (filtered install). |
 | Node.js Version | `22.x` | Pinned by `engines.node`; the dropdown is overridden anyway. |
 | Include files outside root directory | **on** (default) | Required — pnpm must reach the workspace root. |
+| Fluid Compute (**Settings → Functions**) | **on** (default) | Confirm it. With Fluid off, the Hobby per-function ceiling is 60s and Vercel **fails the build** on the `maxDuration = 300` export rather than clamping it. |
 
 ### Why Root Directory is `packages/nextjs`
 

@@ -90,14 +90,25 @@ export async function GET(request: NextRequest) {
         controller.enqueue(encoder.encode(": keepalive\n\n"));
       }, HEARTBEAT_INTERVAL_MS);
 
+      // Tracked separately from `closed` so an abort that lands before
+      // watchBlocks is assigned can still stop the poller once it exists.
+      const stopWatching = () => {
+        try {
+          unwatch?.();
+        } catch {
+          // already stopped
+        }
+        unwatch = undefined;
+      };
+
       // Runs from an abort listener, where a throw would go unhandled; the
       // runtime may already have torn the controller down by then.
       const cleanup = () => {
+        stopWatching();
         if (closed) return;
         closed = true;
         clearInterval(heartbeat);
         try {
-          unwatch?.();
           controller.close();
         } catch {
           // already closed
@@ -124,6 +135,13 @@ export async function GET(request: NextRequest) {
 
         // Send initial blocks
         send({ type: "initial", blocks: initialBlocks }, "initial");
+
+        // The initial fetch above is several sequential awaits; a client that
+        // disconnected during them must not start a poller at all.
+        if (request.signal.aborted) {
+          cleanup();
+          return;
+        }
 
         // Watch for new blocks
         unwatch = client.watchBlocks({
@@ -161,9 +179,9 @@ export async function GET(request: NextRequest) {
           pollingInterval: chainConfig.pollingInterval,
         });
 
-        // A request aborted before watchBlocks was assigned leaves the watcher
-        // running, so re-run cleanup once it exists.
-        if (request.signal.aborted) cleanup();
+        // The abort listener may have fired while watchBlocks was being
+        // assigned, in which case cleanup() found no watcher to stop.
+        if (request.signal.aborted) stopWatching();
       } catch (error) {
         console.error("Error in SSE stream:", error);
         send(
