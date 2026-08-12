@@ -26,6 +26,9 @@
   "author": "michael@wmby.me",
   "license": "ISC",
   "packageManager": "pnpm@10.5.2",
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "lucide-react": "^0.552.0"
   }

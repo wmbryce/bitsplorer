@@ -104,6 +104,14 @@ bitsplorer/
 └── package.json
 ```
 
+## 🚢 Deployment
+
+See [`DEPLOY.md`](./DEPLOY.md) for the Vercel runbook. Note that the app needs an
+Ethereum RPC endpoint per chain (`RPC_URL_MAINNET`, `RPC_URL_SEPOLIA`,
+`RPC_URL_BASE`) — see [`packages/nextjs/.env.example`](./packages/nextjs/.env.example).
+Without them it falls back to viem's public defaults, most of which are dead or
+rate-limited.
+
 ## 🔗 Links
 
 - [Next.js Documentation](https://nextjs.org/docs)
